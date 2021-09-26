@@ -1,0 +1,13 @@
+{
+  "name": "com.centurygame.btree",
+  "displayName": "BTreePlugin",
+  "version": "1.0.0",
+  "description": "行为树插件",
+  "author": "liuyu",
+  "license": "MIT",
+  "unity": "2018.4",
+  "keywords": [
+    "btree",
+    "行为树"
+  ]
+}
