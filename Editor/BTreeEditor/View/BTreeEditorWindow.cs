@@ -602,14 +602,14 @@ namespace BTree.Editor
         #endregion
 
         #region 配置文件相关
-        static string sOpenFilePath = "";
+        string mOpenFilePath = "";
         public void loadBTree()
         {
             string text = EditorUtility.OpenFilePanel("Load Behavior Tree", BTreeEditorHelper.EditorConfigPath, "json");
             if (!string.IsNullOrEmpty(text))
             {
                 UnityEngine.Debug.Log("loadBTree:" + text);
-                sOpenFilePath = text;
+                mOpenFilePath = text;
                 string json = BTreeEditorHelper.ReadFileAtPath(text);
                 BTreeEditorConfig config = BTreeEditorHelper.FromJson<BTreeEditorConfig>(json);
                 mGraphDesigner = BTreeEditorNodeFactory.BtreeEditorConfig_TO_BTreeGraphDesigner(config);
@@ -622,11 +622,11 @@ namespace BTree.Editor
                 EditorUtility.DisplayDialog("Save Error", "未创建根节点", "ok");
                 return;
             }
-            if (!string.IsNullOrEmpty(sOpenFilePath))
+            if (!string.IsNullOrEmpty(mOpenFilePath))
             {
                 string _config = BTreeEditorNodeFactory.BTreeGraphDesigner_TO_BtreeEditorConfig(mGraphDesigner);
-                BTreeEditorHelper.WirteFileAtPath(_config, sOpenFilePath);
-                EditorUtility.DisplayDialog("Save", "保存行为树编辑器成功:" + sOpenFilePath, "ok");
+                BTreeEditorHelper.WirteFileAtPath(_config, mOpenFilePath);
+                EditorUtility.DisplayDialog("Save", "保存行为树编辑器成功:" + mOpenFilePath, "ok");
             }
             else
             {
@@ -647,7 +647,7 @@ namespace BTree.Editor
                 string _config = BTreeEditorNodeFactory.BTreeGraphDesigner_TO_BtreeEditorConfig(mGraphDesigner);
                 BTreeEditorHelper.WirteFileAtPath(_config, text);
                 EditorUtility.DisplayDialog("Save", "保存行为树编辑器成功:" + text, "ok");
-                sOpenFilePath = text;
+                mOpenFilePath = text;
             }
         }
         public void exportBtreeToLua()
@@ -684,7 +684,7 @@ namespace BTree.Editor
         }
         public void ReSet()
         {
-            sOpenFilePath = "";
+            mOpenFilePath = "";
         }
         #endregion
         #region 右键菜单点击回调
