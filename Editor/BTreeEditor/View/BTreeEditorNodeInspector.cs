@@ -202,7 +202,7 @@ namespace BTree.Editor
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(_space);
-                EditorGUILayout.LabelField(BTreeEditorUtility.SplitCamelCase(_field.Name) + ":", new GUILayoutOption[] { GUILayout.Width(100) });
+                EditorGUILayout.LabelField(BTreeEditorUtility.SplitCamelCase(_field) + ":", new GUILayoutOption[] { GUILayout.Width(100) });
                 if (_field.FieldType == typeof(int))
                 {
                     var _val = EditorGUILayout.IntField((int)(_field.GetValue(_obj)));

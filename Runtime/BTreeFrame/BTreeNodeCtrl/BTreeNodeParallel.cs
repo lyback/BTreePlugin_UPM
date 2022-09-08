@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 namespace BTreeFrame
 {
     /// <summary>
@@ -9,6 +10,7 @@ namespace BTreeFrame
     /// </summary>
     public class BTreeNodeParalle : BTreeNodeCtrl
     {
+        [Header("完成条件")]
         public BTreeParallelFinishCondition FinishCondition = BTreeParallelFinishCondition.AND;
         private List<BTreeRunningStatus> m_ChildNodeSatuses = new List<BTreeRunningStatus>();
         public BTreeNodeParalle()

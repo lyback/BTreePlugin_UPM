@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using BTreeFrame;
 using UnityEngine;
+using UnityEditor;
 using System;
 
 namespace BTree.Editor
@@ -15,7 +16,15 @@ namespace BTree.Editor
         public BTreeNodeConnection m_ParentNodeConnection;
 
         public string m_NodeName { get { return m_EditorNode.m_Node.Name; } }
-
+        public int m_Layer
+        {
+            get
+            {
+                if (m_ParentNode != null)
+                    return m_ParentNode.m_Layer + 1;
+                return 0;
+            }
+        }
         private int _Index = -1;
         private int m_Index
         {
@@ -34,6 +43,10 @@ namespace BTree.Editor
                                 return _Index;
                             }
                         }
+                    }
+                    else
+                    {
+                        _Index = 1;
                     }
                 }
                 return _Index;
@@ -307,7 +320,9 @@ namespace BTree.Editor
                 GUI.DrawTexture(new Rect(rect.x + (rect.width - BTreeEditorUtility.ConnectionWidth) / 2f, rect.yMax - 3f, BTreeEditorUtility.ConnectionWidth, (BTreeEditorUtility.BottomConnectionHeight + BTreeEditorUtility.TaskBackgroundShadowSize)), BTreeEditorUtility.TaskConnectionBottomTexture, ScaleMode.ScaleToFit);
             }
             //背景
-            GUI.Label(rect, "", m_Selected ? BTreeEditorUtility.TaskSelectedGUIStyle : BTreeEditorUtility.TaskGUIStyle);
+            GUI.Label(rect, "", getBorderStyle());
+            //进度
+            drawProgress(rect);
             //图标背景
             GUI.DrawTexture(new Rect(rect.x + (rect.width - BTreeEditorUtility.IconBorderSize) / 2f, rect.y + ((BTreeEditorUtility.IconAreaHeight - BTreeEditorUtility.IconBorderSize) / 2) + 2f, BTreeEditorUtility.IconBorderSize, BTreeEditorUtility.IconBorderSize), BTreeEditorUtility.TaskBorderTexture);
             //图标
@@ -320,7 +335,13 @@ namespace BTree.Editor
                     GUI.DrawTexture(new Rect(rect.x + 15f, rect.y - 17f, 14f, 14f), m_EditorNode.m_IsCollapsed ? BTreeEditorUtility.ExpandTaskTexture : BTreeEditorUtility.CollapseTaskTexture, ScaleMode.ScaleToFit);
                 }
             }
+            //名字
             GUI.Label(new Rect(rect.x, rect.yMax - BTreeEditorUtility.TitleHeight - 1f, rect.width, BTreeEditorUtility.TitleHeight), ToString(), BTreeEditorUtility.TaskTitleGUIStyle);
+            //索引
+            if (m_ParentNode != null)
+                GUI.Label(new Rect(rect.x - BTreeEditorUtility.IndexBgSize / 2f, rect.y - BTreeEditorUtility.IndexBgSize / 2f, BTreeEditorUtility.IndexBgSize, BTreeEditorUtility.IndexBgSize),
+                    m_Index.ToString(),
+                    BTreeEditorUtility.IndexBgGUIStyle[m_Layer - 1]);
             return true;
         }
         //绘制连线
@@ -359,6 +380,65 @@ namespace BTree.Editor
                 result = new Vector2(rect2.center.x, rect2.yMax - (BTreeEditorUtility.BottomConnectionHeight / 2));
             }
             return result;
+        }
+        //背景
+        private GUIStyle getBorderStyle()
+        {
+            BTreeNode node = m_EditorNode.m_Node;
+            //入口节点
+            if (m_IsEntryDisplay)
+                return m_Selected ? BTreeEditorUtility.TaskIdentifySelectedGUIStyle : BTreeEditorUtility.TaskIdentifyGUIStyle;
+            //普通节点
+            GUIStyle style = m_Selected ? BTreeEditorUtility.TaskSelectedGUIStyle : BTreeEditorUtility.TaskGUIStyle;
+            return style;
+        }
+
+        //绘制进度条
+        private void drawProgress(Rect rect)
+        {
+            float progress = 0;
+            if (progress <= 0) return;
+
+            float x = rect.x;
+            float y = rect.y;
+            float width = rect.width;
+            float height = rect.height;
+            float width2 = width / 2;
+            float total = width * 2 + height * 2;
+            float length = total * progress;
+
+            Vector2[] points =
+            {
+                new Vector2(x + width2, y),
+                new Vector2(x, y),
+                new Vector2(x, y + height),
+                new Vector2(x + width,y + height),
+                new Vector2(x + width, y),
+                new Vector2(x + width2, y),
+            };
+
+            List<Vector3> list = new List<Vector3>();
+            list.Add(points[0]);
+            for (int i = 0, len = points.Length - 1; i < len; i++)
+            {
+                Vector2 cur = points[i];
+                Vector2 next = points[i + 1];
+                Vector2 dir = next - cur;
+                float dis = dir.magnitude;
+                if (length >= dis)
+                {
+                    length -= dis;
+                    list.Add(next);
+                }
+                else
+                {
+                    Vector2 p = cur + dir.normalized * length;
+                    list.Add(p);
+                    break;
+                }
+            }
+            Handles.color = Color.white;
+            Handles.DrawAAPolyLine(BTreeEditorUtility.LineGreen, 10, list.ToArray());
         }
         #endregion
         private void loadTaskIcon()
@@ -481,14 +561,13 @@ namespace BTree.Editor
         public override string ToString()
         {
             string isEntry = m_IsEntryDisplay ? "(Entry)" : "";
-            string index = m_ParentNode != null ? "(" + m_Index + ")" : "";
             if (m_NodeName == null)
             {
-                return isEntry + index;
+                return isEntry;
             }
 
             string name = m_NodeName.Replace("BTreeNode", "");
-            return name + isEntry + index;
+            return name + isEntry;
         }
     }
 }

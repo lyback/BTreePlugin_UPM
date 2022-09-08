@@ -70,6 +70,8 @@ namespace BTree.Editor
 
         public static readonly int MaxTaskDescriptionBoxHeight = 300;
 
+        public static readonly int IndexBgSize = 30;
+
         private static GUIStyle graphStatusGUIStyle = null;
 
         private static GUIStyle taskFoldoutGUIStyle = null;
@@ -119,6 +121,8 @@ namespace BTree.Editor
         private static GUIStyle welcomeScreenTextHeaderGUIStyle = null;
 
         private static GUIStyle welcomeScreenTextDescriptionGUIStyle = null;
+
+        private static GUIStyle[] indexBgGUIStyle;
 
         private static Texture2D taskBorderTexture = null;
 
@@ -187,6 +191,11 @@ namespace BTree.Editor
         private static Texture2D parallelSelectorIcon = null;
 
         private static Texture2D inverterIcon = null;
+        
+        private static Texture2D lineRed;
+        private static Texture2D lineGreen;
+        private static Texture2D lineBlue;
+        private static Texture2D lineOrange;
 
         public static GUIStyle GraphStatusGUIStyle
         {
@@ -485,6 +494,18 @@ namespace BTree.Editor
                     BTreeEditorUtility.initWelcomeScreenTextDescriptionGUIStyle();
                 }
                 return BTreeEditorUtility.welcomeScreenTextDescriptionGUIStyle;
+            }
+        }
+
+        public static GUIStyle[] IndexBgGUIStyle
+        {
+            get
+            {
+                if (BTreeEditorUtility.indexBgGUIStyle == null)
+                {
+                    BTreeEditorUtility.initIndexBgGUIStyle();
+                }
+                return BTreeEditorUtility.indexBgGUIStyle;
             }
         }
 
@@ -895,8 +916,61 @@ namespace BTree.Editor
             }
         }
 
-        public static string SplitCamelCase(string s)
+        public static Texture2D LineRed
         {
+            get
+            {
+                if (BTreeEditorUtility.lineRed == null)
+                {
+                    BTreeEditorUtility.lineRed = BTreeEditorUtility.LoadTexture("Line1.png");
+                }
+                return BTreeEditorUtility.lineRed;
+            }
+        }
+
+        public static Texture2D LineGreen
+        {
+            get
+            {
+                if (BTreeEditorUtility.lineGreen == null)
+                {
+                    BTreeEditorUtility.lineGreen = BTreeEditorUtility.LoadTexture("Line2.png");
+                }
+                return BTreeEditorUtility.lineGreen;
+            }
+        }
+
+        public static Texture2D LineBlue
+        {
+            get
+            {
+                if (BTreeEditorUtility.lineBlue == null)
+                {
+                    BTreeEditorUtility.lineBlue = BTreeEditorUtility.LoadTexture("Line3.png");
+                }
+                return BTreeEditorUtility.lineBlue;
+            }
+        }
+
+        public static Texture2D LineOrange
+        {
+            get
+            {
+                if (BTreeEditorUtility.lineOrange == null)
+                {
+                    BTreeEditorUtility.lineOrange = BTreeEditorUtility.LoadTexture("Line4.png");
+                }
+                return BTreeEditorUtility.lineOrange;
+            }
+        }
+
+        public static string SplitCamelCase(FieldInfo _field)
+        {
+            string s = _field.Name;
+            HeaderAttribute header = (HeaderAttribute)Attribute.GetCustomAttribute(_field, typeof(HeaderAttribute));
+            if (header != null)
+                s = header.header;
+
             if (s.Equals(""))
             {
                 return s;
@@ -910,7 +984,6 @@ namespace BTree.Editor
             s = s.Replace("_", " ");
             return (char.ToUpper(s[0]) + s.Substring(1)).Trim();
         }
-
 
         private static string GetEditorBaseDirectory(ScriptableObject obj = null)
         {
@@ -1245,6 +1318,19 @@ namespace BTree.Editor
         {
             BTreeEditorUtility.welcomeScreenTextDescriptionGUIStyle = new GUIStyle(GUI.skin.label);
             BTreeEditorUtility.welcomeScreenTextDescriptionGUIStyle.wordWrap = (true);
+        }
+
+        private static void initIndexBgGUIStyle()
+        {
+            BTreeEditorUtility.indexBgGUIStyle = new GUIStyle[9];
+            for (int i = 0; i < indexBgGUIStyle.Length; i++)
+            {
+                GUIStyle style = BTreeEditorUtility.initTaskGUIStyle(BTreeEditorUtility.LoadTexture(string.Format("NodeIndexBg{0}.png", i + 1)), new RectOffset(0, 0, 0, 0));
+                style.alignment = TextAnchor.MiddleCenter;
+                style.fontSize = 16;
+                style.fontStyle = FontStyle.Bold;
+                indexBgGUIStyle[i] = style;
+            }
         }
 
         private static void initTaskBorderTexture()
