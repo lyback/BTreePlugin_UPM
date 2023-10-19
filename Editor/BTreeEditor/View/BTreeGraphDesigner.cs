@@ -16,10 +16,10 @@ namespace BTree.Editor
         public BTreeNodeDesigner m_HoverNode { get; private set; }
         public BTreeNodeConnection m_ActiveNodeConnection { get; set; }
         public List<BTreeNodeConnection> m_SelectedNodeConnections = new List<BTreeNodeConnection>();
-
-        public BTreeGraphDesigner()
+        public string m_ConfigPath;
+        public BTreeGraphDesigner(string configPath)
         {
-
+            m_ConfigPath = configPath;
         }
 
         public void GraphDirty()
@@ -389,7 +389,7 @@ namespace BTree.Editor
             BTreeNode _node = (BTreeNode)type.GetConstructor(new Type[] { }).Invoke(new object[] { });
             BTreeEditorNode _editorNode = new BTreeEditorNode(_node);
             _editorNode.m_Pos = position;
-            BTreeNodeDesigner _nodeDesigner = new BTreeNodeDesigner(_editorNode);
+            BTreeNodeDesigner _nodeDesigner = new BTreeNodeDesigner(_editorNode, m_ConfigPath);
             if (m_RootNode == null)
             {
                 m_RootNode = _nodeDesigner;
@@ -484,7 +484,7 @@ namespace BTree.Editor
             {
                 for (int i = 0; i < m_SelectedNodes.Count; i++)
                 {
-                    clipboardNodes.Add(new BTreeNodeDesigner(m_SelectedNodes[i].Clone()));
+                    clipboardNodes.Add(new BTreeNodeDesigner(m_SelectedNodes[i].Clone(), m_ConfigPath));
                 }
             }
             return clipboardNodes;

@@ -1,8 +1,6 @@
 {
-    "name": "BTreeEditor",
+    "name": "BTreeDebug",
     "references": [
-        "BTreeFrame",
-        "BTreeDebug",
         "BTreeMisc"
     ],
     "optionalUnityReferences": [],

@@ -30,7 +30,7 @@ namespace BTree.Editor
             {
                 if (_mGraphDesigner == null)
                 {
-                    _mGraphDesigner = new BTreeGraphDesigner();
+                    _mGraphDesigner = new BTreeGraphDesigner("");
                 }
                 return _mGraphDesigner;
             }
@@ -197,7 +197,7 @@ namespace BTree.Editor
             }))
             {
                 ReSet();
-                _mGraphDesigner = new BTreeGraphDesigner();
+                _mGraphDesigner = new BTreeGraphDesigner("");
             }
             if (GUILayout.Button("Load", EditorStyles.toolbarButton, new GUILayoutOption[]
             {
@@ -612,7 +612,7 @@ namespace BTree.Editor
                 mOpenFilePath = text;
                 string json = BTreeEditorHelper.ReadFileAtPath(text);
                 BTreeEditorConfig config = BTreeEditorHelper.FromJson<BTreeEditorConfig>(json);
-                mGraphDesigner = BTreeEditorNodeFactory.BtreeEditorConfig_TO_BTreeGraphDesigner(config);
+                mGraphDesigner = BTreeEditorNodeFactory.BtreeEditorConfig_TO_BTreeGraphDesigner(config, text);
             }
         }
         public void saveBTree()
@@ -662,7 +662,7 @@ namespace BTree.Editor
             if (!string.IsNullOrEmpty(text))
             {
                 UnityEngine.Debug.Log("exportBtreeToLua");
-                string lua = BTreeEditorNodeFactory.BTreeNode_TO_Lua(mGraphDesigner.m_RootNode);
+                string lua = BTreeEditorNodeFactory.BTreeNode_TO_Lua(mGraphDesigner.m_RootNode, mGraphDesigner.m_ConfigPath);
                 BTreeEditorHelper.WirteFileAtPath(lua, text);
                 EditorUtility.DisplayDialog("Export", "导出行为树Lua:" + text, "ok");
             }
@@ -676,8 +676,8 @@ namespace BTree.Editor
                 string fileName = ConfigFiles[i].GetFileName().RemoveSuffix();
                 string json = BTreeEditorHelper.ReadFileAtPath(ConfigFiles[i]);
                 BTreeEditorConfig config = BTreeEditorHelper.FromJson<BTreeEditorConfig>(json);
-                var _GraphDesigner = BTreeEditorNodeFactory.BtreeEditorConfig_TO_BTreeGraphDesigner(config);
-                string lua = BTreeEditorNodeFactory.BTreeNode_TO_Lua(_GraphDesigner.m_RootNode);
+                var _GraphDesigner = BTreeEditorNodeFactory.BtreeEditorConfig_TO_BTreeGraphDesigner(config, "");
+                string lua = BTreeEditorNodeFactory.BTreeNode_TO_Lua(_GraphDesigner.m_RootNode, ConfigFiles[i]);
                 BTreeEditorHelper.WirteFileAtPath(lua, BTreeEditorHelper.LuaConfigPath + "guide/" + fileName + ".lua");
             }
             EditorUtility.DisplayDialog("Export", "导出所有引导行为树Lua成功", "ok");

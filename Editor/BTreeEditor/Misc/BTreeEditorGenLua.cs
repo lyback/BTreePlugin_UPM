@@ -10,12 +10,13 @@ namespace BTree.Editor
     class BTreeEditorGenLua
     {
         static string TAB = "\t";
-        public static string GenLuaFromBTreeNode(BTreeNodeDesigner _dRoot)
+        public static string GenLuaFromBTreeNode(BTreeNodeDesigner _dRoot, string _configPath)
         {
             BTreeNode _root = _dRoot.m_EditorNode.m_Node;
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendFormat("local {0} = ", _root.Name);
             BTreeNode_TO_Lua(_dRoot, ref stringBuilder, "\n", true);
+            stringBuilder.AppendFormat("{0}.ConfigPath = \"{1}\"\n", _root.Name, _configPath);
             stringBuilder.Append("return " + _root.Name);
             return stringBuilder.ToString();
         }

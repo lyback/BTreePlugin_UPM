@@ -1,3 +1,14 @@
-﻿{
-	"name": "BTreeFrame"
+{
+    "name": "BTreeFrame",
+    "references": [
+        "BTreeDebug"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }

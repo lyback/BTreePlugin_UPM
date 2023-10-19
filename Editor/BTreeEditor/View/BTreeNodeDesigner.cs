@@ -14,6 +14,7 @@ namespace BTree.Editor
         public List<BTreeNodeDesigner> m_ChildNodeList;
         public List<BTreeNodeConnection> m_ChildNodeConnectionList;
         public BTreeNodeConnection m_ParentNodeConnection;
+        public string m_ConfigPath;
 
         public string m_NodeName { get { return m_EditorNode.m_Node.Name; } }
         public int m_Layer
@@ -87,13 +88,14 @@ namespace BTree.Editor
 
         private Texture m_Icon;
 
-        public BTreeNodeDesigner(BTreeEditorNode _editorNode)
+        public BTreeNodeDesigner(BTreeEditorNode _editorNode, string _configPath)
         {
             if (_editorNode == null)
             {
                 UnityEngine.Debug.Log("BTreeNodeDesigner Init Null");
                 return;
             }
+            m_ConfigPath = _configPath;
             m_EditorNode = _editorNode;
             m_ChildNodeList = new List<BTreeNodeDesigner>();
             m_ChildNodeConnectionList = new List<BTreeNodeConnection>();
@@ -342,7 +344,35 @@ namespace BTree.Editor
                 GUI.Label(new Rect(rect.x - BTreeEditorUtility.IndexBgSize / 2f, rect.y - BTreeEditorUtility.IndexBgSize / 2f, BTreeEditorUtility.IndexBgSize, BTreeEditorUtility.IndexBgSize),
                     m_Index.ToString(),
                     BTreeEditorUtility.IndexBgGUIStyle[m_Layer - 1]);
+
+            //绘制调试状态
+            drawDebugState(rect);
             return true;
+        }
+        //绘制调试状态
+        private void drawDebugState(Rect rect)
+        {
+
+            var debugNode = BTreeDebug.FindeNode(m_ConfigPath, GetIndexs());
+            if (debugNode != null)
+            {
+                Texture2D texture = null;
+                int stateIconSize = BTreeEditorUtility.IndexBgSize;
+                var state = debugNode.state;
+                switch (state)
+                {
+                    case BTreeDebugNodeState.Running:
+                        texture = BTreeEditorUtility.ExecutionSuccessTexture;
+                        break;
+                    case BTreeDebugNodeState.Error:
+                        texture = BTreeEditorUtility.ExecutionFailureTexture;
+                        break;
+                }
+                if (texture != null)
+                {
+                    GUI.DrawTexture(new Rect(rect.xMax - stateIconSize, rect.yMax - stateIconSize, stateIconSize, stateIconSize), texture);
+                }
+            }
         }
         //绘制连线
         public void drawNodeConnection(Vector2 offset, float graphZoom, bool disabled)
@@ -569,5 +599,19 @@ namespace BTree.Editor
             string name = m_NodeName.Replace("BTreeNode", "");
             return name + isEntry;
         }
+
+        #region Debug
+        public int[] GetIndexs()
+        {
+            Stack<int> indexs = new Stack<int>();
+            var _node = this;
+            while (_node != null)
+            {
+                indexs.Push(_node.m_Index);
+                _node = _node.m_ParentNode;
+            }
+            return indexs.ToArray();
+        }
+        #endregion
     }
 }
